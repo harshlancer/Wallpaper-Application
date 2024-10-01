@@ -17,14 +17,39 @@ import {NativeModules} from 'react-native';
 const {WallPaperManager} = NativeModules;
 
 const setAsWallpaper = imageUrl => {
-  WallPaperManager.setWallpaper(imageUrl, (error, success) => {
-    if (error) {
-      Alert.alert('Error', error);
-    } else {
-      Alert.alert('Success', success);
-    }
-  });
-};
+    Alert.alert(
+      'Set Wallpaper',
+      'Do you want to set it as home screen or lock screen wallpaper?',
+      [
+        {
+          text: 'Home Screen',
+          onPress: () => {
+            WallPaperManager.setWallpaper(imageUrl, 'home', (error, success) => {
+              if (error) {
+                Alert.alert('Error', error);
+              } else {
+                Alert.alert('Success', success);
+              }
+            });
+          },
+        },
+        {
+          text: 'Lock Screen',
+          onPress: () => {
+            WallPaperManager.setWallpaper(imageUrl, 'lock', (error, success) => {
+              if (error) {
+                Alert.alert('Error', error);
+              } else {
+                Alert.alert('Success', success);
+              }
+            });
+          },
+        },
+        {text: 'Cancel', style: 'cancel'},
+      ],
+    );
+  };
+  
 const {width, height} = Dimensions.get('window'); // Get device width and height
 
 const WallpaperDetail = ({route}) => {

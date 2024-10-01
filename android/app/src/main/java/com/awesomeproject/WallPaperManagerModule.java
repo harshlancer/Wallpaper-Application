@@ -8,6 +8,7 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableMap;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -25,7 +26,7 @@ public class WallPaperManagerModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void setWallpaper(String imageUrl, Callback callback) {
+    public void setWallpaper(String imageUrl, String type, Callback callback) {
         AsyncTask.execute(() -> {
             try {
                 // Download the image
@@ -35,12 +36,16 @@ public class WallPaperManagerModule extends ReactContextBaseJavaModule {
                 InputStream input = connection.getInputStream();
                 Bitmap bitmap = BitmapFactory.decodeStream(input);
 
-                // Set the wallpaper
+                // Set the wallpaper based on type
                 WallpaperManager wallpaperManager = WallpaperManager.getInstance(getReactApplicationContext());
-                wallpaperManager.setBitmap(bitmap);
+                if (type.equals("home")) {
+                    wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM);
+                } else if (type.equals("lock")) {
+                    wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK);
+                }
 
                 // Call the callback with success
-                callback.invoke(null, "Wallpaper set successfully!");
+                callback.invoke(null, "Wallpaper set successfully on " + type + " screen!");
             } catch (Exception e) {
                 // Call the callback with an error
                 callback.invoke(e.getMessage(), null);
